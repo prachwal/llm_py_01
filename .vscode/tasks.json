@@ -78,7 +78,7 @@
 			"label": "Sprawdź jakość kodu (flake8)",
 			"type": "shell",
 			"command": "flake8",
-			"args": ["src/", "app.py", "--max-line-length=88", "--ignore=E203,W503"],
+			"args": ["src/", "app.py", "pages/", "--max-line-length=88", "--ignore=E203,W503"],
 			"group": "build",
 			"presentation": {
 				"echo": true,
@@ -105,7 +105,7 @@
 			"label": "Formatuj kod (black)",
 			"type": "shell",
 			"command": "black",
-			"args": ["src/", "app.py", "tests/"],
+			"args": ["src/", "app.py", "pages/", "tests/"],
 			"group": "build",
 			"presentation": {
 				"echo": true,
@@ -118,7 +118,7 @@
 			"label": "Sprawdź formatowanie kodu",
 			"type": "shell",
 			"command": "black",
-			"args": ["--check", "src/", "app.py", "tests/"],
+			"args": ["--check", "src/", "app.py", "pages/", "tests/"],
 			"group": "build",
 			"presentation": {
 				"echo": true,

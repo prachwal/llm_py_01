@@ -1,5 +1,5 @@
 """
-Główna aplikacja Streamlit z systemem logowania
+Główna aplikacja Streamlit z modularną strukturą stron
 """
 import streamlit as st
 import logging
@@ -21,88 +21,64 @@ def init_session_state():
         st.session_state['login_time'] = None
 
 
-def show_login_form():
-    """Wyświetla formularz logowania"""
-    st.title("🔐 Logowanie")
-    
-    with st.form("login_form"):
-        username = st.text_input("Nazwa użytkownika")
-        password = st.text_input("Hasło", type="password")
-        submitted = st.form_submit_button("Zaloguj się")
-        
-        if submitted:
-            if username and password:
-                if AuthService.authenticate_user(username, password):
-                    AuthService.login_user(username)
-                    st.success("Pomyślnie zalogowano!")
-                    st.rerun()
-                else:
-                    st.error("Nieprawidłowa nazwa użytkownika lub hasło")
-            else:
-                st.error("Wprowadź nazwę użytkownika i hasło")
-    
-    # Informacje dla developera
-    if Config.get_debug():
-        st.info("**Dane testowe:**\n\nUżytkownik: admin\nHasło: admin123")
+def show_navigation():
+    """Wyświetla nawigację aplikacji w sidebarze"""
+    st.sidebar.markdown("## 🧭 Nawigacja")
+
+    # Informacje o użytkowniku
+    current_user = AuthService.get_current_user()
+    if current_user:
+        st.sidebar.success(f"Zalogowany: **{current_user}**")
+
+        # Informacje o sesji
+        session_info = AuthService.get_session_info()
+        if session_info:
+            time_left_min = int(session_info['time_left'] / 60)
+            st.sidebar.info(f"⏱️ Pozostały czas: {time_left_min} min")
+
+        st.sidebar.markdown("---")
+
+        # Menu nawigacyjne
+        pages = {
+            "📊 Dashboard": "pages/dashboard.py",
+            "📈 Dane i Analizy": "pages/data.py",
+            "⚙️ Ustawienia": "pages/settings.py"
+        }
+
+        st.sidebar.markdown("### 📋 Strony")
+        for page_name, page_path in pages.items():
+            if st.sidebar.button(page_name, use_container_width=True):
+                st.switch_page(page_path)
+
+        st.sidebar.markdown("---")
+
+        # Przycisk wylogowania
+        if st.sidebar.button("🚪 Wyloguj się", use_container_width=True, type="secondary"):
+            AuthService.logout_user()
+            st.rerun()
+
+        # Dodatkowe informacje
+        st.sidebar.markdown("---")
+        st.sidebar.markdown("### ℹ️ Informacje")
+        st.sidebar.markdown(f"**Aplikacja:** {Config.get_app_name()}")
+        if Config.get_debug():
+            st.sidebar.warning("🐛 Tryb DEBUG")
 
 
 def show_main_app():
     """Wyświetla główną aplikację po zalogowaniu"""
-    # Nagłówek z informacjami o sesji
-    col1, col2 = st.columns([3, 1])
-    
-    with col1:
-        st.title(f"👋 Witaj, {AuthService.get_current_user()}!")
-    
-    with col2:
-        if st.button("Wyloguj się"):
-            AuthService.logout_user()
-            st.rerun()
-    
-    # Informacje o sesji
-    session_info = AuthService.get_session_info()
-    if session_info:
-        st.sidebar.markdown("### 📊 Informacje o sesji")
-        st.sidebar.write(f"**Użytkownik:** {session_info['username']}")
-        st.sidebar.write(f"**Czas pozostały:** {int(session_info['time_left'])} sekund")
-        st.sidebar.write(f"**Czas trwania sesji:** {int(session_info['session_duration'])} sekund")
-    
-    # Główna zawartość aplikacji
-    st.markdown("---")
-    st.header("🚀 Główna aplikacja")
-    
-    # Przykładowa zawartość
-    tab1, tab2, tab3 = st.tabs(["Dashboard", "Dane", "Ustawienia"])
-    
-    with tab1:
-        st.subheader("Dashboard")
-        st.write("To jest główny dashboard aplikacji.")
-        
-        # Przykładowe metryki
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Użytkownicy", "1", "0")
-        with col2:
-            st.metric("Sesje", "1", "1")
-        with col3:
-            st.metric("Uptime", "100%", "0%")
-    
-    with tab2:
-        st.subheader("Dane")
-        st.write("Tutaj można wyświetlać dane i analizy.")
-        
-        # Przykładowy wykres
-        import numpy as np
-        chart_data = np.random.randn(20, 3)
-        st.line_chart(chart_data)
-    
-    with tab3:
-        st.subheader("Ustawienia")
-        st.write("Panel ustawień aplikacji.")
-        
-        if st.button("Test logowania"):
-            logger.info("Test logowania wykonany przez użytkownika")
-            st.success("Test logowania zapisany w logach")
+    # Nawigacja w sidebarze
+    show_navigation()
+
+    # Domyślnie pokazuj dashboard
+    st.switch_page("pages/dashboard.py")
+
+
+def show_login_page():
+    """Wyświetla stronę logowania"""
+    # Import tutaj, żeby uniknąć cyklicznych importów
+    from pages.login import show_login_page
+    show_login_page()
 
 
 def main():
@@ -114,20 +90,20 @@ def main():
         layout="wide",
         initial_sidebar_state="expanded"
     )
-    
+
     # Inicjalizacja
     init_session_state()
-    
+
     try:
         # Walidacja konfiguracji
         Config.validate_config()
-        
+
         # Sprawdzenie uwierzytelnienia
         if AuthService.is_authenticated():
             show_main_app()
         else:
-            show_login_form()
-            
+            show_login_page()
+
     except ValueError as e:
         st.error(f"Błąd konfiguracji: {e}")
         logger.error(f"Błąd konfiguracji: {e}")

@@ -31,19 +31,31 @@ streamlit run app.py
 ## 📁 Struktura projektu
 
 ```
-├── app.py                 # Główna aplikacja Streamlit
+├── app.py                 # Główna aplikacja Streamlit (router)
 ├── requirements.txt       # Zależności Python
 ├── setup.sh              # Skrypt automatycznej instalacji
 ├── .env                  # Konfiguracja środowiska
 ├── .env.example          # Przykład konfiguracji
-├── src/                  # Kod źródłowy
+├── src/                  # Kod źródłowy (logika biznesowa)
 │   ├── __init__.py
 │   ├── config.py         # Zarządzanie konfiguracją
 │   └── auth_service.py   # Serwis uwierzytelniania
-└── tests/                # Testy jednostkowe
-    ├── __init__.py
-    ├── test_config.py
-    └── test_auth_service.py
+├── pages/                # Moduły stron aplikacji
+│   ├── __init__.py
+│   ├── login.py          # Strona logowania
+│   ├── dashboard.py      # Dashboard główny
+│   ├── data.py          # Analiza i wizualizacja danych
+│   └── settings.py       # Ustawienia aplikacji
+├── tests/                # Testy jednostkowe
+│   ├── __init__.py
+│   ├── test_config.py
+│   ├── test_auth_service.py
+│   └── test_pages.py     # Testy modułów stron
+└── .vscode/              # Konfiguracja VS Code
+    ├── tasks.json        # Zadania deweloperskie
+    ├── launch.json       # Konfiguracje debugowania
+    ├── settings.json     # Ustawienia projektu
+    └── extensions.json   # Zalecane rozszerzenia
 ```
 
 ## 🔐 System logowania
@@ -155,13 +167,63 @@ black src/ app.py
 - ✅ Logowanie zdarzeń
 - ✅ Automatyczny skrypt setup.sh
 - ✅ Walidacja konfiguracji
+- ✅ **Modularna struktura stron (pages/)**
+- ✅ **Interaktywne wykresy (Plotly)**
+- ✅ **Zaawansowana nawigacja**
+- ✅ **Responsywny UI design**
 
 ### Interfejs użytkownika
-- 🔐 Formularz logowania
-- 📊 Dashboard z metrykami
-- 📈 Przykładowe wykresy
-- ⚙️ Panel ustawień
-- 📋 Informacje o sesji w sidebarze
+- 🔐 Strona logowania z ulepszonym interfejsem
+- 📊 Dashboard z metrykami i wykresami aktywności
+- 📈 Strona analizy danych z interaktywnymi wykresami (Plotly)
+- ⚙️ Kompleksowa strona ustawień z konfiguracją profilu
+- 🧭 Intuicyjna nawigacja w sidebarze
+- 📱 Responsywny design i moderne UI components
+
+## 🎯 **Architektura modularna**
+
+Aplikacja została przeprojektowana z myślą o skalowalności:
+
+### **📱 Struktura stron:**
+- **`app.py`** - główny router i zarządzanie nawigacją
+- **`pages/login.py`** - zaawansowana strona logowania
+- **`pages/dashboard.py`** - dashboard z metrykami i wykresami
+- **`pages/data.py`** - analiza danych z Plotly charts
+- **`pages/settings.py`** - konfiguracja użytkownika i aplikacji
+
+### **⚡ Funkcjonalności stron:**
+
+#### **🔐 Login (`pages/login.py`):**
+- Centrum formularza logowania
+- Informacje debug dla deweloperów
+- Dodatkowe sekcje informacyjne
+- Responsywny design
+
+#### **📊 Dashboard (`pages/dashboard.py`):**
+- Metryki użytkownika w czasie rzeczywistym
+- Wykresy aktywności (pandas + plotly)
+- Informacje o sesji z paskiem postępu
+- Szybkie akcje nawigacyjne
+
+#### **📈 Dane (`pages/data.py`):**
+- Interaktywne wykresy (Plotly Express)
+- Filtry w sidebarze
+- Tabs: Wykresy, Tabele, Szczegóły, Eksport
+- Symulacja różnych typów danych
+- Funkcje eksportu danych
+
+#### **⚙️ Ustawienia (`pages/settings.py`):**
+- Tabs: Profil, Konfiguracja, Bezpieczeństwo, Dev Tools
+- Edycja profilu użytkownika
+- Konfiguracja wyglądu aplikacji
+- Zmiana hasła i ustawienia sesji
+- Narzędzia deweloperskie (debug mode)
+
+### **� Nawigacja:**
+- Sidebar z menu stron
+- Informacje o użytkowniku i sesji
+- Przycisk wylogowania
+- Wskaźniki stanu (debug mode)
 
 ## 🔧 Opcje skryptu setup.sh
 
