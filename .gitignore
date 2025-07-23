@@ -34,9 +34,6 @@ wheels/
 # PyCharm
 .idea/
 
-# VS Code
-.vscode/
-
 # Pliki logów
 *.log
 logs/
